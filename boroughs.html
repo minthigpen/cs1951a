@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title>NYC Boroughs</title>
+        <meta charset="utf-8">
+        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <script src="https://d3js.org/d3-array.v1.min.js"></script>
+        <script src="https://d3js.org/d3-geo.v1.min.js"></script>
+<!--        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>-->
+        <style>
+            
+            body {
+/*                background-color: #f6f6f6;*/
+                font-family: "Helvetica", sans-serif;
+            }
+            
+            .label {
+               
+                font-size: 2.5rem;
+                fill: black;
+                text-anchor: middle;
+            }
+            
+            .main {
+                fill: #a9a9a9;
+                font-family: "Futura";
+                
+            }
+            
+            .smaller {
+                fill: #660000;
+                font-size: 2rem;
+            }
+            
+            .StatenIsland {
+                fill: indianred;
+            }
+            
+            .Queens {
+                fill: cadetblue;
+            }
+            .Brooklyn {
+                fill: #9370DB;
+            }
+            .Bronx {
+                fill: orange;
+            }
+            .Manhattan{
+                fill: steelblue;
+            }
+            
+            .highlighted {
+                stroke: black;
+                stroke-width: 1;
+            }
+            
+            .district {
+                opacity: 0.5;
+            }
+            
+            .district:hover {
+                opacity: 1;
+                stroke: white;
+                stroke-width: 1;
+            }
+            
+            .selected {
+                opacity: 1;
+                stroke: white;
+                stroke-width: 1;
+            }
+            
+            .names {
+                text-anchor: end;
+            }
+            
+            .overlay {
+                fill: grey;
+                opacity: 0.3;
+            }
+            
+            .active {
+                fill: steelblue;
+            }
+            
+            .slider {
+                opacity: 0.5;
+                fill: red;
+            }
+
+        </style>
+    
+    </head>
+
+    <body>
+        <script>
+            var xLabel = 700;
+            var yLabel = 535;
+            var districtsDict = {};
+            var resultOffset = {top: 60, left:660};
+            var resultHeight = 20;
+            
+            var canvas = d3.select('body').append('svg')
+                .attr('width', 800)
+                .attr('height', 800);
+            
+            // TITLE //
+            
+            canvas.append('text')
+                .attr('class', 'label main')
+                .attr('x', 120)
+                .attr('y', 70)
+                .text('NEW YORK');
+            
+            // END OF TITLE // 
+            
+            // RESULTS SEGMENT //
+            var results = canvas.append('g');
+            
+            results.append("text")
+                .attr('class', 'label smaller')
+                .text("Median Rent p/sqft")
+                .attr('x', resultOffset.left)
+                .attr('y', resultOffset.top);
+            
+            var namesCol = results.append('g');
+            
+            namesCol.selectAll('text')
+                .data([]);
+            
+            function refreshResults(){
+                
+                var currResults = [];
+                for (key in districtsDict) {
+                    if (districtsDict[key]){
+                        currResults.push(key);
+                    }
+                }
+                console.log(currResults);
+                namesCol.selectAll('text')
+                    .data(currResults)
+                    .exit()
+                    .remove();
+                
+                namesCol.selectAll('text')
+                    .data(currResults)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'names')
+                    .text(function(d, i){return d;})
+                    .attr('y', function(d, i){return i*resultHeight + resultOffset.top + 30})
+                    .attr('x', resultOffset.left);
+                
+                
+            } 
+            
+            function updatedSelected(name, action){
+                if (action == "add"){
+                    districtsDict[name] = true;
+                } else{
+                    districtsDict[name] = false;
+                }
+               
+                console.log(districtsDict);
+            }
+            
+            // END OF RESULTS SEGMENT //
+            
+            // GEOJSON SEGMENT //
+            
+            d3.json('nycNeighborhoods.geojson', function(data){
+                
+                var group = canvas.selectAll('g')
+                    .data(data.features)
+                    .enter()
+                    .append('g');
+                
+                var projection = d3.geoMercator()
+                    .scale(50000)
+                    .translate([64820,39230]);
+                
+                var path = d3.geoPath().projection(projection);
+                
+                var areas = group.append('path')
+                    .attr('d', path)
+                    .attr('class', function(d){
+                          return "district " + d.properties.borough.replace(/\s+/g, '');
+                          })
+                    .attr('fill', 'black');
+                
+                areas.append("title")
+                    .text(function(d){
+                    return d.properties.neighborhood;
+                });
+                
+                areas.on("click", function() {
+                   d3.select(this).classed("selected", !d3.select(this).classed("selected"));
+                    var action = d3.select(this).classed("selected") ? "add" : "remove";
+                    updatedSelected(d3.select(this).select('title').text(), action);
+                    refreshResults();
+                });
+                // END OF GEOJSON SEGMENT//
+                
+                // TIME SLIDER SEGMENT //
+                var timeLabel = canvas.append("text")
+                    .attr('class', 'label')
+                    .attr('x', xLabel)
+                    .attr('y', yLabel)
+                    .text("Feb 2010");
+
+                var timeScale = d3.scaleTime()
+                    .domain([new Date(2010, 2), new Date(2017, 1)])
+                    .range([0, 760]);
+
+                var timeAxis = d3.axisBottom(timeScale);
+
+                var axis = canvas.append('g')
+                    .attr('transform', 'translate(20,550)')
+                    .call(timeAxis);
+
+                var bbox = axis.node().getBBox();
+
+                var slider = canvas.append('rect')
+                    .attr('class', 'slider')
+                    .attr('x', 20)
+                    .attr('y', 550)
+                    .attr('width', 5)
+                    .attr('height', bbox.height + 20);
+                var overlay = canvas.append('rect')
+                    .attr('class', 'overlay')
+                    .attr('x', 20)
+                    .attr('y', 550)
+                    .attr('width', bbox.width)
+                    .attr('height', bbox.height + 20);
+
+                function enableInteraction(){
+                    var revTimeScale = d3.scaleLinear().domain([20, 20+bbox.width]).range([new Date(2010, 2), new Date(2017, 1)]);
+
+                    var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+                    overlay
+                        .on("mouseover", mouseover)
+                        .on("mouseout", mouseout)
+                        .on("mousemove", mousemove)
+                        .on("touchmove", mousemove);
+
+                    function mouseover() {
+                      overlay.attr('class', 'overlay active');
+                    }
+
+                    function mouseout() {
+                      overlay.attr('class', 'overlay');
+                    }
+
+                    function mousemove() {
+                      // TODO
+                      var coords = d3.mouse(this);
+                      var time = new Date(revTimeScale(coords[0]));
+                        var currYear =  String(time.getFullYear());
+                        var currMonth = months[time.getMonth()];
+                      timeLabel.text(currMonth + " " + currYear);
+                        slider.attr('x', coords[0]-6);
+                    }
+                }
+                enableInteraction();
+                // END OF TIME SLIDER SEGMENT // 
+            });
+            
+        </script>
+    
+    </body>
+    
+</html>
