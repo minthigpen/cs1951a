@@ -1,7 +1,7 @@
 from porter_stemmer import PorterStemmer
 import re
 import string
-
+#rand
 stop = {'the', 'is', 'on', 'a'}
 
 class Tokenizer(object):
