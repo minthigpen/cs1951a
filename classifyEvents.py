@@ -64,7 +64,7 @@ def main():
 
 	##### TRAIN THE MODEL ######################################
 	# Initialize the type of the classifier
-	classifier = BernoulliNB(binarize=None)
+	classifier = LinearSVC()
 
 	# Train classifier using 'fit'
 	classifier.fit(training_features, training_labels)
@@ -73,7 +73,7 @@ def main():
 	input_features = vectorizer.transform(input_text)
 	predicted_labels = classifier.predict(input_features)
 
-	with open("data/fb_events/ClassifiedFacebookEvents.csv", "w") as classified:
+	with open("data/fb_events/ClassifiedNullFacebookEvents.csv", "w") as classified:
 		writer = csv.writer(classified)
 		writer.writerow(["neighborhood", "time of event", "event description", "art event indicator"])
 		for i in range(0, len(predicted_labels)):

@@ -1,8 +1,9 @@
 from porter_stemmer import PorterStemmer
 import re
 import string
-#rand
-stop = {'the', 'is', 'on', 'a'}
+from stop_words import get_stop_words
+
+stop = get_stop_words('english')
 
 class Tokenizer(object):
     def __init__(self):
