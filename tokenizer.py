@@ -1,8 +1,9 @@
 from porter_stemmer import PorterStemmer
 import re
 import string
+from stop_words import get_stop_words
 
-stop = {'the', 'is', 'on', 'a'}
+stop = get_stop_words('english')
 
 class Tokenizer(object):
     def __init__(self):
