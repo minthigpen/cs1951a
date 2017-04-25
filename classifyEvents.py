@@ -64,7 +64,7 @@ def main():
 
 	##### TRAIN THE MODEL ######################################
 	# Initialize the type of the classifier
-	classifier = BernoulliNB(binarize=None)
+	classifier = LinearSVC(binarize=None)
 
 	# Train classifier using 'fit'
 	classifier.fit(training_features, training_labels)

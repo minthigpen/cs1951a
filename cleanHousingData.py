@@ -13,8 +13,8 @@ def main():
 			zipcodes = row[2].split(", ")
 			for zipcode in zipcodes:
 				zip_to_subborough[zipcode] = row[0]
-	getMedianRentChange(zip_to_subborough)
-	# getAverageIncomeChange(zip_to_subborough)
+	# getMedianRentChange(zip_to_subborough)
+	getAverageIncomeChange(zip_to_subborough)
 	
 def getMedianRentChange(zip_to_subborough):	
 	medians_by_zip = {}
@@ -97,13 +97,13 @@ def getMedianRentChange(zip_to_subborough):
 
 
 def getAverageIncomeChange(zip_to_subborough):
-	avg_income_by_subborough_2015 = {}
+	avg_income_by_subborough = {}
 	for zipcode in zip_to_subborough:
- 		avg_income_by_subborough_2015[zip_to_subborough[zipcode]] = [0, 0]
+ 		avg_income_by_subborough[zip_to_subborough[zipcode]] = {2011: [0, 0], 2012: [0, 0], 2013: [0, 0], 2014: [0, 0], 2015: [0, 0]}
 
-	to_exclude = []	
-	with open("data/average income/income_2015.csv", "r") as units_2015:
-		with open("data/average income/aggregate_income_2015.csv", "r") as avg_2015:
+	to_exclude = set()
+	with open("data/average_income/income_2015.csv", "r") as units_2015:
+		with open("data/average_income/aggregate_income_2015.csv", "r") as avg_2015:
 			housing_units_2015 = csv.reader(units_2015)
 			avg_income_2015 = csv.reader(avg_2015)
 			next(housing_units_2015, None)
@@ -113,13 +113,77 @@ def getAverageIncomeChange(zip_to_subborough):
 
 			for row in avg_income_2015:
 				if row[3] == "-":
-					to_exclude.append(row[1])
+					to_exclude.add(row[1])
 			for row in housing_units_2015:
 				if row[3] == "-":
-					to_exclude.append(row[1])
+					to_exclude.add(row[1])
 
-	with open("data/average income/income_2015.csv", "r") as units_2015:
-		with open("data/average income/aggregate_income_2015.csv", "r") as avg_2015:
+	with open("data/average_income/income_2014.csv", "r") as units_2014:
+		with open("data/average_income/aggregate_income_2014.csv", "r") as avg_2014:
+			housing_units_2014 = csv.reader(units_2014)
+			avg_income_2014 = csv.reader(avg_2014)
+			next(housing_units_2014, None)
+			next(housing_units_2014, None)
+			next(avg_income_2014, None)
+			next(avg_income_2014, None)
+
+			for row in avg_income_2014:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+			for row in housing_units_2014:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+
+	with open("data/average_income/income_2013.csv", "r") as units_2013:
+		with open("data/average_income/aggregate_income_2013.csv", "r") as avg_2013:
+			housing_units_2013 = csv.reader(units_2013)
+			avg_income_2013 = csv.reader(avg_2013)
+			next(housing_units_2013, None)
+			next(housing_units_2013, None)
+			next(avg_income_2013, None)
+			next(avg_income_2013, None)
+
+			for row in avg_income_2013:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+			for row in housing_units_2013:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+
+	with open("data/average_income/income_2012.csv", "r") as units_2012:
+		with open("data/average_income/aggregate_income_2012.csv", "r") as avg_2012:
+			housing_units_2012 = csv.reader(units_2012)
+			avg_income_2012 = csv.reader(avg_2012)
+			next(housing_units_2012, None)
+			next(housing_units_2012, None)
+			next(avg_income_2012, None)
+			next(avg_income_2012, None)
+
+			for row in avg_income_2012:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+			for row in housing_units_2012:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+
+	with open("data/average_income/income_2011.csv", "r") as units_2011:
+		with open("data/average_income/aggregate_income_2011.csv", "r") as avg_2011:
+			housing_units_2011 = csv.reader(units_2011)
+			avg_income_2011 = csv.reader(avg_2011)
+			next(housing_units_2011, None)
+			next(housing_units_2011, None)
+			next(avg_income_2011, None)
+			next(avg_income_2011, None)
+
+			for row in avg_income_2011:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+			for row in housing_units_2011:
+				if row[3] == "-":
+					to_exclude.add(row[1])
+
+	with open("data/average_income/income_2015.csv", "r") as units_2015:
+		with open("data/average_income/aggregate_income_2015.csv", "r") as avg_2015:
 			housing_units_2015 = csv.reader(units_2015)
 			avg_income_2015 = csv.reader(avg_2015)
 			next(housing_units_2015, None)
@@ -129,39 +193,65 @@ def getAverageIncomeChange(zip_to_subborough):
 
 			for row in avg_income_2015:
 				if row[1] in zip_to_subborough and row[1] not in to_exclude:
-					avg_income_by_subborough_2015[zip_to_subborough[row[1]]][0] += int(row[3])
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2015][0] += int(row[3])
 						
 			for row in housing_units_2015:
 				if row[1] in zip_to_subborough and row[1] not in to_exclude:
-					avg_income_by_subborough_2015[zip_to_subborough[row[1]]][1] += int(row[3])
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2015][1] += int(row[3])
+
+	with open("data/average_income/income_2014.csv", "r") as units_2014:
+		with open("data/average_income/aggregate_income_2014.csv", "r") as avg_2014:
+			housing_units_2014 = csv.reader(units_2014)
+			avg_income_2014 = csv.reader(avg_2014)
+			next(housing_units_2014, None)
+			next(housing_units_2014, None)
+			next(avg_income_2014, None)
+			next(avg_income_2014, None)
+
+			for row in avg_income_2014:
+				if row[1] in zip_to_subborough and row[1] not in to_exclude:
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2014][0] += int(row[3])
+						
+			for row in housing_units_2014:
+				if row[1] in zip_to_subborough and row[1] not in to_exclude:
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2014][1] += int(row[3])
+
+	with open("data/average_income/income_2013.csv", "r") as units_2013:
+		with open("data/average_income/aggregate_income_2013.csv", "r") as avg_2013:
+			housing_units_2013 = csv.reader(units_2013)
+			avg_income_2013 = csv.reader(avg_2013)
+			next(housing_units_2013, None)
+			next(housing_units_2013, None)
+			next(avg_income_2013, None)
+			next(avg_income_2013, None)
+
+			for row in avg_income_2013:
+				if row[1] in zip_to_subborough and row[1] not in to_exclude:
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2013][0] += int(row[3])
+						
+			for row in housing_units_2013:
+				if row[1] in zip_to_subborough and row[1] not in to_exclude:
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2013][1] += int(row[3])
+
+	with open("data/average_income/income_2012.csv", "r") as units_2012:
+		with open("data/average_income/aggregate_income_2012.csv", "r") as avg_2012:
+			housing_units_2012 = csv.reader(units_2012)
+			avg_income_2012 = csv.reader(avg_2012)
+			next(housing_units_2012, None)
+			next(housing_units_2012, None)
+			next(avg_income_2012, None)
+			next(avg_income_2012, None)
+
+			for row in avg_income_2012:
+				if row[1] in zip_to_subborough and row[1] not in to_exclude:
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2012][0] += int(row[3])
+						
+			for row in housing_units_2012:
+				if row[1] in zip_to_subborough and row[1] not in to_exclude:
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2012][1] += int(row[3])
 			
-
-	for subborough in avg_income_by_subborough_2015:
-		avg_income_by_subborough_2015[subborough] = avg_income_by_subborough_2015[subborough][0] / avg_income_by_subborough_2015[subborough][1]
-
-	avg_income_by_subborough_2011 = {}
-	for zipcode in zip_to_subborough:
- 		avg_income_by_subborough_2011[zip_to_subborough[zipcode]] = [0, 0]
-
-	to_exclude = []	
-	with open("data/average income/income_2011.csv", "r") as units_2011:
-		with open("data/average income/aggregate_income_2011.csv", "r") as avg_2011:
-			housing_units_2011 = csv.reader(units_2011)
-			avg_income_2011 = csv.reader(avg_2011)
-			next(housing_units_2011, None)
-			next(housing_units_2011, None)
-			next(avg_income_2011, None)
-			next(avg_income_2011, None)
-
-			for row in avg_income_2011:
-				if row[3] == "-":
-					to_exclude.append(row[1])
-			for row in housing_units_2011:
-				if row[3] == "-":
-					to_exclude.append(row[1])
-
-	with open("data/average income/income_2011.csv", "r") as units_2011:
-		with open("data/average income/aggregate_income_2011.csv", "r") as avg_2011:
+	with open("data/average_income/income_2011.csv", "r") as units_2011:
+		with open("data/average_income/aggregate_income_2011.csv", "r") as avg_2011:
 			housing_units_2011 = csv.reader(units_2011)
 			avg_income_2011 = csv.reader(avg_2011)
 			next(housing_units_2011, None)
@@ -171,26 +261,23 @@ def getAverageIncomeChange(zip_to_subborough):
 
 			for row in avg_income_2011:
 				if row[1] in zip_to_subborough and row[1] not in to_exclude:
-					avg_income_by_subborough_2011[zip_to_subborough[row[1]]][0] += int(row[3])
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2011][0] += int(row[3])
 						
 			for row in housing_units_2011:
 				if row[1] in zip_to_subborough and row[1] not in to_exclude:
-					avg_income_by_subborough_2011[zip_to_subborough[row[1]]][1] += int(row[3])
-			
+					avg_income_by_subborough[zip_to_subborough[row[1]]][2011][1] += int(row[3])
 
-	for subborough in avg_income_by_subborough_2011:
-		avg_income_by_subborough_2011[subborough] = avg_income_by_subborough_2011[subborough][0] / avg_income_by_subborough_2011[subborough][1]
+	for subborough in avg_income_by_subborough:
+		for year in avg_income_by_subborough[subborough]:
+			avg_income_by_subborough[subborough][year] = avg_income_by_subborough[subborough][year][0] / avg_income_by_subborough[subborough][year][1]
 
-	avg_income_change_by_subborough = {}
-	for subborough in avg_income_by_subborough_2015:
-		if subborough in avg_income_by_subborough_2011:
-			avg_income_change_by_subborough[subborough] = (avg_income_by_subborough_2015[subborough] - avg_income_by_subborough_2011[subborough]) / avg_income_by_subborough_2011[subborough]
+	# print(avg_income_by_subborough)
 
-	with open("data/average income/averageIncomeChangeBySubborough.csv", "w") as avg_change:
+	with open("data/average_income/averageIncomeBySubborough.csv", "w") as avg_change:
 		average_change = csv.writer(avg_change)
-		average_change.writerow(["subborough", "2011-2015 change in average income"])
-		for subborough in avg_income_change_by_subborough:
-			average_change.writerow([subborough, avg_income_change_by_subborough[subborough]])
+		average_change.writerow(["subborough", "2011", "2012", "2013", "2014", "2015"])
+		for subborough in avg_income_by_subborough:
+			average_change.writerow([subborough, avg_income_by_subborough[subborough][2011], avg_income_by_subborough[subborough][2012], avg_income_by_subborough[subborough][2013], avg_income_by_subborough[subborough][2014], avg_income_by_subborough[subborough][2015]])
 
 if __name__ == '__main__':
 	main()
