@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+        <title>Change in median rent over time</title>
+        <style type="text/css">
+        #chart {
+            margin-left: 40px;
+            height: 506px;
+        }
+
+        h1, h2, p {
+            margin-left: 40px;
+            margin-right:40px;
+            font-family:Helvetica;
+        }
+            
+        text {
+            font: 10px sans-serif;
+        }
+
+
+        .axis path, .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .label {
+            fill: #777;
+        }
+
+        
+        </style>
+    </head>
+    <body>
+        <h1>Change in Median Rent, 2011 - 2015</h1>
+        <p id="chart"></p>
+        <script type="text/javascript" src="neighborhoods.js"></script>
+    </body>
+</html>

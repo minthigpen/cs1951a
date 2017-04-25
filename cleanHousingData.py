@@ -14,20 +14,10 @@ def main():
 			for zipcode in zipcodes:
 				zip_to_subborough[zipcode] = row[0]
 	getMedianRentChange(zip_to_subborough)
-	getAverageIncomeChange(zip_to_subborough)
+	# getAverageIncomeChange(zip_to_subborough)
 	
 def getMedianRentChange(zip_to_subborough):	
-	change_by_zip = {}
-	with open("data/median rent/median_rent_2015.csv", "r") as median_15:
-		median_2015 = csv.reader(median_15)
-		next(median_2015, None)
-		next(median_2015, None)
-		for row in median_2015:
-			if row[3] != "-":
-				median_rent_temp = row[3].replace("+", "")
-				median_rent = median_rent_temp.replace("+", "")
-				change_by_zip[row[1]] = int(median_rent)
-
+	medians_by_zip = {}
 	with open("data/median rent/median_rent_2011.csv", "r") as median_11:
 		median_2011 = csv.reader(median_11)
 		next(median_2011, None)
@@ -36,25 +26,74 @@ def getMedianRentChange(zip_to_subborough):
 			if row[3] != "-":
 				median_rent_temp = row[3].replace("+", "")
 				median_rent = median_rent_temp.replace(",", "")
-				if row[1] in change_by_zip:
-					absolute_change = change_by_zip[row[1]] - int(median_rent)
-					change_by_zip[row[1]] = absolute_change / int(median_rent) 
+				medians_by_zip[row[1]] = {2011: int(median_rent)}
 
-	median_rent_by_subborough = {}
+	with open("data/median rent/median_rent_2012.csv", "r") as median_12:
+		median_2012 = csv.reader(median_12)
+		next(median_2012, None)
+		next(median_2012, None)
+		for row in median_2012:
+			if row[3] != "-":
+				median_rent_temp = row[3].replace("+", "")
+				median_rent = median_rent_temp.replace(",", "")
+				if row[1] in medians_by_zip:
+					medians_by_zip[row[1]][2012] = int(median_rent)
+
+	with open("data/median rent/median_rent_2013.csv", "r") as median_13:
+		median_2013 = csv.reader(median_13)
+		next(median_2013, None)
+		next(median_2013, None)
+		for row in median_2013:
+			if row[3] != "-":
+				median_rent_temp = row[3].replace("+", "")
+				median_rent = median_rent_temp.replace(",", "")
+				if row[1] in medians_by_zip:
+					medians_by_zip[row[1]][2013] = int(median_rent)
+
+	with open("data/median rent/median_rent_2014.csv", "r") as median_14:
+		median_2014 = csv.reader(median_14)
+		next(median_2014, None)
+		next(median_2014, None)
+		for row in median_2014:
+			if row[3] != "-":
+				median_rent_temp = row[3].replace("+", "")
+				median_rent = median_rent_temp.replace(",", "")
+				if row[1] in medians_by_zip:
+					medians_by_zip[row[1]][2014] = int(median_rent)
+
+	with open("data/median rent/median_rent_2015.csv", "r") as median_15:
+		median_2015 = csv.reader(median_15)
+		next(median_2015, None)
+		next(median_2015, None)
+		for row in median_2015:
+			if row[3] != "-":
+				median_rent_temp = row[3].replace("+", "")
+				median_rent = median_rent_temp.replace(",", "")
+				if row[1] in medians_by_zip:
+					medians_by_zip[row[1]][2015] = int(median_rent)
+
+	
+
+	avg_median_rent_by_subborough = {}
 	for zipcode in zip_to_subborough:
- 		median_rent_by_subborough[zip_to_subborough[zipcode]] = [0, 0]
+ 		avg_median_rent_by_subborough[zip_to_subborough[zipcode]] = {2011: [], 2012: [], 2013: [], 2014: [], 2015: []}
 
-	for zipcode in change_by_zip:
+	for zipcode in medians_by_zip:
  		if zipcode in zip_to_subborough:
 	 		subborough = zip_to_subborough[zipcode]
-	 		median_rent_by_subborough[subborough][0] += change_by_zip[zipcode]
-	 		median_rent_by_subborough[subborough][1] += 1
+	 		for i in range(2011, 2016):
+	 			if i in medians_by_zip[zipcode]:
+		 			avg_median_rent_by_subborough[subborough][i].append(medians_by_zip[zipcode][i])
+
+	for subborough in avg_median_rent_by_subborough:
+		for i in range(2011, 2016):
+			avg_median_rent_by_subborough[subborough][i] = sum(avg_median_rent_by_subborough[subborough][i]) / len(avg_median_rent_by_subborough[subborough][i]) 		
 
 	with open("data/median rent/averageMedianRentChangeBySubborough.csv", "w") as output:
 		writer = csv.writer(output)
-		writer.writerow(["subborough", "2011-2015 average change in median rent price"])
-		for subborough in median_rent_by_subborough:
-			writer.writerow([subborough, str(median_rent_by_subborough[subborough][0] / median_rent_by_subborough[subborough][1])])
+		writer.writerow(["subborough", "2011", "2012", "2013", "2014", "2015"])
+		for subborough in avg_median_rent_by_subborough:
+			writer.writerow([subborough, avg_median_rent_by_subborough[subborough][2011], avg_median_rent_by_subborough[subborough][2012], avg_median_rent_by_subborough[subborough][2013], avg_median_rent_by_subborough[subborough][2014], avg_median_rent_by_subborough[subborough][2015]])
 
 
 def getAverageIncomeChange(zip_to_subborough):

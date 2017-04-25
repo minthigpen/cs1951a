@@ -33,13 +33,15 @@ def load_training_file(file_path):
 def load_input_file(file_path):
 	features = []
 	locations = []
+	times = []
 	with open(file_path, 'r', encoding='latin1') as file_reader:		
 		reader = csv.reader(file_reader, delimiter=',', quotechar='"')
 		next(reader, None)
 		for row in reader:
 			locations.append(row[0])
 			features.append(row[6])
-	return (locations, features)
+			times.append(row[5])
+	return (locations, times, features)
 
 def main():
 	parser = argparse.ArgumentParser()
@@ -67,15 +69,15 @@ def main():
 	# Train classifier using 'fit'
 	classifier.fit(training_features, training_labels)
 
-	(input_locations, input_text) = load_input_file(opts.input)
+	(input_locations, input_times, input_text) = load_input_file(opts.input)
 	input_features = vectorizer.transform(input_text)
 	predicted_labels = classifier.predict(input_features)
 
-	with open("ClassifiedFacebookEvents.csv", "w") as classified:
+	with open("data/fb_events/ClassifiedFacebookEvents.csv", "w") as classified:
 		writer = csv.writer(classified)
-		writer.writerow(["neighborhood", "description", "art_event_indicator"])
+		writer.writerow(["neighborhood", "time of event", "event description", "art event indicator"])
 		for i in range(0, len(predicted_labels)):
-			writer.writerow([input_locations[i], input_text[i], predicted_labels[i]])
+			writer.writerow([input_locations[i], input_times[i], input_text[i], predicted_labels[i]])
 
 if __name__ == '__main__':
 	main()
