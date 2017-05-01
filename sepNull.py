@@ -1,6 +1,6 @@
 import csv
 
-with open("./data/FullFacebookEvents.csv", "r") as inputF,  open("data/facebookEventNull.csv", "w") as outputF1, open("data/facebookEventNotNull.csv", "w") as outputF2:
+with open("./data/fb_events/FullFacebookEvents.csv", "r") as inputF,  open("./data/fb_events/facebookEventNull.csv", "w") as outputF1, open("./data/fb_events/facebookEventNotNull.csv", "w") as outputF2:
 
 	catIndex = 4
 
